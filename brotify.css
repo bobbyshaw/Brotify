@@ -1,0 +1,38 @@
+a[href^="http:"]::after {
+	display:none
+}
+#tweets {
+	margin: 0 auto;
+}
+
+#tweets li {
+	padding: 20px 10px;
+	line-height: 20px;
+	width:600px;
+}
+
+#tweets.content { vertical-align:middle; }
+
+#tweets img { 
+	float:left; 
+	padding:0 20px;
+	clear:left;
+	margin-bottom:10px;
+}
+
+#header {
+	text-align: center;
+	padding: 20px 0px;
+	background-color: #222;
+}
+
+#title {
+	font-size:28px;
+	font-weight:bold;
+}
+
+#lastFMshouts li {
+	list-style:circle;
+	padding:5px 20px;
+
+}
