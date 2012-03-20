@@ -2,6 +2,7 @@ var sp = getSpotifyApi(1);
 var models = sp.require('sp://import/scripts/api/models');
 var player = models.player;
 var playCount;
+var apiKey = 'b25b959554ed76058ac220b7b2e0a026';
 
 exports.init = init;
 
@@ -34,7 +35,42 @@ function updatePageWithTrackDetails() {
     } else {
         var track = playerTrackInfo.data;
         header.innerHTML = track.name + " on the album " + track.album.name + " by " + track.album.artist.name + ".";
+		//getLastFMShouts();
+		getFriends();
     }
+}
+
+function getFriends(){
+	var user = 'cassanova1212';
+	var friends = new Array();
+	getTopArtists(user);
+	friends = $.get('http://ws.audioscrobbler.com/2.0/?method=user.getfriends&user='+user+'&api_key='+apiKey+'&format=json', function(data){
+		console.log(data);
+		jQuery.each(data.friends.user, function(i,val){
+			friends[i] = val.name;
+			getTopArtists(val.name);
+		})
+	});
+}
+function getTopArtists(user){
+	var playerTrackInfo = player.track;
+	var track = playerTrackInfo.data;
+	$.get('http://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user='+user+'&period=7day&api_key=b25b959554ed76058ac220b7b2e0a026&format=json', function(data){
+		parseTopArtists(data,user);
+	});
+	
+}
+
+function parseTopArtists(data,user){
+	var score = 0;
+	console.log(data);
+	jQuery.each(data.topartists.artist, function(i,val){
+		if (val.playcount > 100 ){ score += 50; }
+		else if (val.playcount  > 10) { score += 10; } 
+		else { score+= 1;}
+    });
+	$('#score').after(user + ': ' +score);
+	$('#score').after('<br>');
 }
 
 function getLastFMShouts(){
@@ -51,8 +87,6 @@ function getLastFMShouts(){
 
         if (req.readyState == 4) {
             if (req.status == 200) {
-                console.log("Search complete!");
-				console.log(req.responseText);
 				var shouts = eval('(' + req.responseText + ')');
 				parseLastFMShouts(shouts);
             }
